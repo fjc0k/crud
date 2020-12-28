@@ -90,6 +90,24 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
     return this.repo.metadata.targetName;
   }
 
+  protected async tryAfterHook(
+    name:
+      | 'afterGetMany'
+      | 'afterGetOne'
+      | 'afterCreateOne'
+      | 'afterCreateMany'
+      | 'afterUpdateOne'
+      | 'afterReplaceOne'
+      | 'afterDeleteOne',
+    payload: any,
+  ) {
+    const _payload = await payload;
+    if (this[name]) {
+      await this[name](_payload);
+    }
+    return _payload;
+  }
+
   /**
    * Get many
    * @param req
@@ -97,7 +115,9 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
   public async getMany(req: CrudRequest): Promise<GetManyDefaultResponse<T> | T[]> {
     const { parsed, options } = req;
     const builder = await this.createBuilder(parsed, options);
-    return this.doGetMany(builder, parsed, options);
+    const res = await this.doGetMany(builder, parsed, options);
+    await this.tryAfterHook('afterGetMany', Array.isArray(res) ? res : res.data);
+    return res;
   }
 
   /**
@@ -105,7 +125,7 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
    * @param req
    */
   public async getOne(req: CrudRequest): Promise<T> {
-    return this.getOneOrFail(req);
+    return this.tryAfterHook('afterGetOne', this.getOneOrFail(req));
   }
 
   /**
@@ -125,19 +145,19 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
     const saved = await this.repo.save<any>(entity);
 
     if (returnShallow) {
-      return saved;
+      return this.tryAfterHook('afterCreateOne', saved);
     } else {
       const primaryParams = this.getPrimaryParams(req.options);
 
       /* istanbul ignore next */
       if (!primaryParams.length && primaryParams.some((p) => isNil(saved[p]))) {
-        return saved;
+        return this.tryAfterHook('afterCreateOne', saved);
       } else {
         req.parsed.search = primaryParams.reduce(
           (acc, p) => ({ ...acc, [p]: saved[p] }),
           {},
         );
-        return this.getOneOrFail(req);
+        return this.tryAfterHook('afterCreateOne', this.getOneOrFail(req));
       }
     }
   }
@@ -165,7 +185,7 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
       this.throwBadRequestException(`Empty data. Nothing to save.`);
     }
 
-    return this.repo.save<any>(bulk, { chunk: 50 });
+    return this.tryAfterHook('afterCreateMany', this.repo.save<any>(bulk, { chunk: 50 }));
   }
 
   /**
@@ -183,13 +203,13 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
     const updated = await this.repo.save(plainToClass(this.entityType, toSave));
 
     if (returnShallow) {
-      return updated;
+      return this.tryAfterHook('afterUpdateOne', updated);
     } else {
       req.parsed.paramsFilter.forEach((filter) => {
         filter.value = updated[filter.field];
       });
 
-      return this.getOneOrFail(req);
+      return this.tryAfterHook('afterUpdateOne', this.getOneOrFail(req));
     }
   }
 
@@ -213,20 +233,20 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
     const replaced = await this.repo.save(plainToClass(this.entityType, toSave));
 
     if (returnShallow) {
-      return replaced;
+      return this.tryAfterHook('afterReplaceOne', replaced);
     } else {
       const primaryParams = this.getPrimaryParams(req.options);
 
       /* istanbul ignore if */
       if (!primaryParams.length) {
-        return replaced;
+        return this.tryAfterHook('afterReplaceOne', replaced);
       }
 
       req.parsed.search = primaryParams.reduce(
         (acc, p) => ({ ...acc, [p]: replaced[p] }),
         {},
       );
-      return this.getOneOrFail(req);
+      return this.tryAfterHook('afterReplaceOne', this.getOneOrFail(req));
     }
   }
 
@@ -241,7 +261,7 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
       ? plainToClass(this.entityType, { ...found })
       : undefined;
     const deleted = await this.repo.remove(found);
-
+    await this.tryAfterHook('afterDeleteOne', found);
     return toReturn;
   }
 
