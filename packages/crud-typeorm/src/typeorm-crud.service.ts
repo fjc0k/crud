@@ -63,7 +63,24 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
     /((%27)|(\'))union/gi,
   ];
 
-  constructor(protected repo: Repository<T>) {
+  constructor(
+    protected repo: Repository<T>,
+    protected hooks?: {
+      afterGetMany?: (list: T[]) => any;
+      afterGetOne?: (item: T) => any;
+      afterCreateOne?: (item: T) => any;
+      afterCreateMany?: (list: T[]) => any;
+      afterUpdateOne?: (item: T) => any;
+      afterReplaceOne?: (item: T) => any;
+      afterDeleteOne?: (item: T) => any;
+      /** afterGetMany, afterGetOne */
+      afterGet?: (list: T[]) => any;
+      /** afterCreateOne, afterCreateMany */
+      afterCreate?: (list: T[]) => any;
+      /** afterUpdateOne, afterReplaceOne, afterDeleteOne */
+      afterMutate?: (list: T[]) => any;
+    },
+  ) {
     super();
 
     this.dbName = this.repo.metadata.connection.options.type;
@@ -101,11 +118,23 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
       | 'afterDeleteOne',
     payload: any,
   ) {
-    const _payload = await payload;
-    if (this[name]) {
-      await this[name](_payload);
+    if (this.hooks) {
+      payload = await payload;
+      const hookNames = [
+        name,
+        name === 'afterCreateOne' || name === 'afterCreateMany'
+          ? 'afterCreate'
+          : name === 'afterGetMany' || name === 'afterGetOne'
+          ? 'afterGet'
+          : 'afterMutate',
+      ];
+      for (const hookName of hookNames) {
+        if (this.hooks[hookName]) {
+          await this.hooks[hookName](payload);
+        }
+      }
     }
-    return _payload;
+    return payload;
   }
 
   /**
