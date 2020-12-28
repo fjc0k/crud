@@ -74,10 +74,8 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
       afterReplaceOne?: (item: T) => any;
       afterDeleteOne?: (item: T) => any;
       /** afterGetMany, afterGetOne */
-      afterGet?: (list: T[]) => any;
-      /** afterCreateOne, afterCreateMany */
-      afterCreate?: (list: T[]) => any;
-      /** afterUpdateOne, afterReplaceOne, afterDeleteOne */
+      afterQuery?: (list: T[]) => any;
+      /** afterCreateOne, afterCreateMany, afterUpdateOne, afterReplaceOne, afterDeleteOne */
       afterMutate?: (list: T[]) => any;
     },
   ) {
@@ -122,15 +120,16 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
       payload = await payload;
       const hookNames = [
         name,
-        name === 'afterCreateOne' || name === 'afterCreateMany'
-          ? 'afterCreate'
-          : name === 'afterGetMany' || name === 'afterGetOne'
-          ? 'afterGet'
-          : 'afterMutate',
+        name === 'afterGetMany' || name === 'afterGetOne' ? 'afterQuery' : 'afterMutate',
       ];
       for (const hookName of hookNames) {
         if (this.hooks[hookName]) {
-          await this.hooks[hookName](payload);
+          await this.hooks[hookName](
+            (hookName === 'afterQuery' || hookName === 'afterMutate') &&
+              !Array.isArray(payload)
+              ? [payload]
+              : payload,
+          );
         }
       }
     }
