@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
-import { objKeys, isString, isFunction } from '@nestjsx/util';
-import { RequestQueryBuilder } from '@nestjsx/crud-request';
+import { objKeys, isString, isFunction } from '@jayfong/nestjsx__util';
+import { RequestQueryBuilder } from '@jayfong/nestjsx__crud-request';
 const pluralize = require('pluralize');
 
 import { safeRequire } from '../util';

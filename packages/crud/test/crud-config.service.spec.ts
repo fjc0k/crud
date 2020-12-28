@@ -1,4 +1,4 @@
-import { RequestQueryBuilder } from '@nestjsx/crud-request';
+import { RequestQueryBuilder } from '@jayfong/nestjsx__crud-request';
 import { CrudGlobalConfig } from '../src/interfaces';
 import { CrudConfigService } from '../src/module/crud-config.service';
 

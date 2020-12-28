@@ -7,7 +7,7 @@ import {
   isNumber,
   isNil,
   objKeys,
-} from '@nestjsx/util';
+} from '@jayfong/nestjsx__util';
 
 import { RequestQueryException } from './exceptions';
 import { ParamsOptions, ParamOption } from './interfaces';

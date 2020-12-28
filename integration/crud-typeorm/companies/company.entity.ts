@@ -1,4 +1,4 @@
-import { CrudValidationGroups } from '@nestjsx/crud';
+import { CrudValidationGroups } from '@jayfong/nestjsx__crud';
 import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import {
   IsOptional,

@@ -117,7 +117,7 @@
 
 - **crud** fixed `BulkDto` swagger description ([#159])
 - **crud** fixed `CrudRequestInterceptor` request parsing
-- **requests** added `@nestjsx/util` as a dependency ([#184])
+- **requests** added `@jayfong/nestjsx__util` as a dependency ([#184])
 - **requests** fixed condition operators mapping ([#148])
 - **requests** fixed ISO date string validation ([#161])
 - **typeorm** fixed filtering and sorting by nested fields ([#105])
@@ -161,9 +161,9 @@
 
 - **repo:** refactor to monorepository
 - **docs:** new [documentation](https://github.com/nestjsx/crud/wiki)
-- **packages:** totally refactor `@nestjsx/crud` to be service (ORM) agnostic
-- **packages:** add `@nestjsx/crud-typeorm` ([docs](https://github.com/nestjsx/crud/wiki/ServiceTypeorm))
-- **packages:** add `@nestjsx/crud-request` ([docs](https://github.com/nestjsx/crud/wiki/Requests#description), [#53])
+- **packages:** totally refactor `@jayfong/nestjsx__crud` to be service (ORM) agnostic
+- **packages:** add `@jayfong/nestjsx__crud-typeorm` ([docs](https://github.com/nestjsx/crud/wiki/ServiceTypeorm))
+- **packages:** add `@jayfong/nestjsx__crud-request` ([docs](https://github.com/nestjsx/crud/wiki/Requests#description), [#53])
 - **crud:** add global options ([docs](https://github.com/nestjsx/crud/wiki/Controllers#global-options), [#64])
 - **crud:** add eager relations option ([#54], [#67])
 

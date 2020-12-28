@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ParsedRequestParams } from '@nestjsx/crud-request';
-import { objKeys } from '@nestjsx/util';
+import { ParsedRequestParams } from '@jayfong/nestjsx__crud-request';
+import { objKeys } from '@jayfong/nestjsx__util';
 
 import {
   CreateManyDto,
