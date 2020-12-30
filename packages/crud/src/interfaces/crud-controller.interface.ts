@@ -10,4 +10,11 @@ export interface CrudController<T> {
   updateOneBase?(req: CrudRequest, dto: T): Promise<T>;
   replaceOneBase?(req: CrudRequest, dto: T): Promise<T>;
   deleteOneBase?(req: CrudRequest): Promise<void | T>;
+  preGetManyBase?(req: CrudRequest): Promise<void>;
+  preGetOneBase?(req: CrudRequest): Promise<void>;
+  preCreateOneBase?(req: CrudRequest, dto: T): Promise<void>;
+  preCreateManyBase?(req: CrudRequest, dto: CreateManyDto<T>): Promise<void>;
+  preUpdateOneBase?(req: CrudRequest, dto: T): Promise<void>;
+  preReplaceOneBase?(req: CrudRequest, dto: T): Promise<void>;
+  preDeleteOneBase?(req: CrudRequest): Promise<void>;
 }

@@ -201,43 +201,50 @@ export class CrudRoutesFactory {
   }
 
   private getManyBase(name: BaseRouteName) {
-    this.targetProto[name] = function getManyBase(req: CrudRequest) {
+    this.targetProto[name] = async function getManyBase(req: CrudRequest) {
+      this.preGetManyBase && (await this.preGetManyBase(req));
       return this.service.getMany(req);
     };
   }
 
   private getOneBase(name: BaseRouteName) {
-    this.targetProto[name] = function getOneBase(req: CrudRequest) {
+    this.targetProto[name] = async function getOneBase(req: CrudRequest) {
+      this.preGetOneBase && (await this.preGetOneBase(req));
       return this.service.getOne(req);
     };
   }
 
   private createOneBase(name: BaseRouteName) {
-    this.targetProto[name] = function createOneBase(req: CrudRequest, dto: any) {
+    this.targetProto[name] = async function createOneBase(req: CrudRequest, dto: any) {
+      this.preCreateOneBase && (await this.preCreateOneBase(req, dto));
       return this.service.createOne(req, dto);
     };
   }
 
   private createManyBase(name: BaseRouteName) {
-    this.targetProto[name] = function createManyBase(req: CrudRequest, dto: any) {
+    this.targetProto[name] = async function createManyBase(req: CrudRequest, dto: any) {
+      this.preCreateManyBase && (await this.preCreateManyBase(req, dto));
       return this.service.createMany(req, dto);
     };
   }
 
   private updateOneBase(name: BaseRouteName) {
-    this.targetProto[name] = function updateOneBase(req: CrudRequest, dto: any) {
+    this.targetProto[name] = async function updateOneBase(req: CrudRequest, dto: any) {
+      this.preUpdateOneBase && (await this.preUpdateOneBase(req, dto));
       return this.service.updateOne(req, dto);
     };
   }
 
   private replaceOneBase(name: BaseRouteName) {
-    this.targetProto[name] = function replaceOneBase(req: CrudRequest, dto: any) {
+    this.targetProto[name] = async function replaceOneBase(req: CrudRequest, dto: any) {
+      this.preReplaceOneBase && (await this.preReplaceOneBase(req, dto));
       return this.service.replaceOne(req, dto);
     };
   }
 
   private deleteOneBase(name: BaseRouteName) {
-    this.targetProto[name] = function deleteOneBase(req: CrudRequest) {
+    this.targetProto[name] = async function deleteOneBase(req: CrudRequest) {
+      this.preDeleteOneBase && (await this.preDeleteOneBase(req));
       return this.service.deleteOne(req);
     };
   }
